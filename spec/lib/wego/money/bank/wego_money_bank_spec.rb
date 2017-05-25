@@ -1,7 +1,27 @@
-require "spec_helper"
+require 'spec_helper'
 
 RSpec.describe Money::Bank::WegoMoneyBank do
   subject { Money::Bank::WegoMoneyBank.new }
+
+  describe '#refresh_rates_expiration' do
+    before do
+      subject.ttl_in_seconds = 1
+    end
+
+    it('sets the rates expiration') do
+      expect(subject.rates_expiration).to be > Time.now
+    end
+  end
+
+  describe '#expired?' do
+    before do
+      subject.ttl_in_seconds = 1
+    end
+
+    it ('returns if rates has expired') do
+      expect(subject.expired?).to be(false)
+    end
+  end
 
   describe '#pair_rate_using_base' do
     before do

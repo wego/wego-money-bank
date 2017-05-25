@@ -7,7 +7,16 @@ class Money
       API_URL = 'http://localhost:3000/places/v1/currencies/latest'
       BASE = 'USD'
 
+      attr_reader :ttl_in_seconds
+      attr_reader :rates_expiration
+
       alias super_get_rate get_rate
+
+      def ttl_in_seconds=(value)
+        @ttl_in_seconds = value
+        refresh_rates_expiration if ttl_in_seconds
+        @ttl_in_seconds
+      end
 
       def url
         API_URL
@@ -47,6 +56,7 @@ class Money
       end
 
       def get_rate(from, to)
+        expire_rates
         fetch_rate(from, to) || pair_rate_using_base(from, to)
       end
 
@@ -74,6 +84,21 @@ class Money
           add_rate(from, to, rate)
           return rate
         end
+      end
+
+      def expire_rates
+        if ttl_in_seconds && expired?
+          refresh_rates_expiration
+          update_rates
+        end
+      end
+
+      def expired?
+        Time.now > rates_expiration
+      end
+
+      def refresh_rates_expiration
+        @rates_expiration = Time.now + ttl_in_seconds
       end
 
     end
