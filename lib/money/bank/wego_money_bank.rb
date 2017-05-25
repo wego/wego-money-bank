@@ -8,13 +8,13 @@ class Money
       BASE = 'USD'
 
       attr_reader :ttl_in_seconds
-      attr_reader :rates_expiration
+      attr_reader :expire_time
 
       alias super_get_rate get_rate
 
       def ttl_in_seconds=(value)
         @ttl_in_seconds = value
-        refresh_rates_expiration if ttl_in_seconds
+        reset_expire_time if ttl_in_seconds
         @ttl_in_seconds
       end
 
@@ -88,17 +88,22 @@ class Money
 
       def expire_rates
         if ttl_in_seconds && expired?
-          refresh_rates_expiration
+          refresh_rates
           update_rates
+          reset_expire_time
         end
       end
 
       def expired?
-        Time.now > rates_expiration
+        Time.now > expire_time
       end
 
-      def refresh_rates_expiration
-        @rates_expiration = Time.now + ttl_in_seconds
+      def reset_expire_time
+        @expire_time = Time.now + ttl_in_seconds
+      end
+
+      def refresh_rates
+        #save in cache
       end
 
     end
