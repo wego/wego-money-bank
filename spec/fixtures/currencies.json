@@ -1,0 +1,6 @@
+[
+  {"base": "USD", "code": "SGD", "rate": "2"},
+  {"base": "USD", "code": "AED", "rate": "4"},
+  {"base": "USD", "code": "PHP", "rate": "6"},
+  {"base": "USD", "code": "VND", "rate": "8"}
+]
