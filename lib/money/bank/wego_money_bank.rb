@@ -4,7 +4,7 @@ require 'open-uri'
 class Money
   module Bank
     class WegoMoneyBank < Money::Bank::VariableExchange
-      API_URL = 'http://localhost:3000/places/v1/currencies/latest'
+      API_URL = 'https://srv.wego.com/places/v1/currencies/latest'
       BASE = 'USD'
 
       attr_accessor :cache
