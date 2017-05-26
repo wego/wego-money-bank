@@ -67,4 +67,33 @@ RSpec.describe Money::Bank::WegoMoneyBank do
     end
   end
 
+  describe '#refresh_rates_cache' do
+    before do
+      subject.cache = data_file('latest.json')
+      subject.stub(:fetch_from_url){ 'text' }
+    end
+
+    it ('refresh the rates cache') do
+      subject.refresh_rates_cache
+      expect(open(subject.cache).read).to eq('text')
+    end
+  end
+
+  describe '#fetch_from_cache' do
+    before do
+      stub_api
+      subject.cache = data_file('latest.json')
+      subject.refresh_rates_cache
+    end
+
+    it ('reads rates from cache') do
+      rates = JSON.parse subject.fetch_from_cache
+
+      expect(rates[0]['code']).to eq('SGD')
+      expect(rates[1]['code']).to eq('AED')
+      expect(rates[2]['code']).to eq('PHP')
+      expect(rates[3]['code']).to eq('VND')
+    end
+  end
+
 end

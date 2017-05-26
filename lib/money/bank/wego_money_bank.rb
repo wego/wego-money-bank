@@ -7,6 +7,7 @@ class Money
       API_URL = 'http://localhost:3000/places/v1/currencies/latest'
       BASE = 'USD'
 
+      attr_accessor :cache
       attr_reader :ttl_in_seconds
       attr_reader :expire_time
 
@@ -48,7 +49,7 @@ class Money
       end
 
       def fetch_from_cache
-
+        open(cache).read if cache
       end
 
       def exchange_rates
@@ -88,7 +89,7 @@ class Money
 
       def expire_rates
         if ttl_in_seconds && expired?
-          refresh_rates
+          refresh_rates_cache
           update_rates
           reset_expire_time
         end
@@ -102,8 +103,11 @@ class Money
         @expire_time = Time.now + ttl_in_seconds
       end
 
-      def refresh_rates
-        #save in cache
+      def refresh_rates_cache
+        json_rates = fetch_from_url
+        open(cache, 'w') do |f|
+          f.write(json_rates)
+        end
       end
 
     end
