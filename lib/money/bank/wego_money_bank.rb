@@ -32,6 +32,8 @@ class Money
       end
 
       def update_rates
+        refresh_rates_cache
+
         exchange_rates.each do |exchange_rate|
           rate = exchange_rate['rate'].to_f
           currency = exchange_rate['code']
@@ -89,7 +91,6 @@ class Money
 
       def expire_rates
         if ttl_in_seconds && expired?
-          refresh_rates_cache
           update_rates
           reset_expire_time
         end
@@ -105,8 +106,10 @@ class Money
 
       def refresh_rates_cache
         json_rates = fetch_from_url
-        open(cache, 'w') do |f|
-          f.write(json_rates)
+        if cache
+          open(cache, 'w') do |f|
+            f.write(json_rates)
+          end
         end
       end
 
