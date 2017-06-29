@@ -106,10 +106,8 @@ class Money
 
       def refresh_rates_cache
         json_rates = fetch_from_url
-        if cache
-          open(cache, 'w') do |f|
-            f.write(json_rates)
-          end
+        open(cache, 'w') do |f|
+          f.write(json_rates)
         end
       end
 
