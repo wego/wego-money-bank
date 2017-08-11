@@ -52,6 +52,14 @@ RSpec.describe Money::Bank::WegoMoneyBank do
     it ('return an array of exchange_rates') do
       expect(subject.exchange_rates.size).to eq(4)
     end
+
+    context 'no rates from cache and API' do
+      it 'returns empty array' do
+        allow(subject).to receive(:fetch_from_cache).and_return nil
+        allow(subject).to receive(:fetch_from_url).and_return nil
+        expect(subject.exchange_rates).to be_empty
+      end
+    end
   end
 
   describe '#update_rates' do
@@ -93,6 +101,19 @@ RSpec.describe Money::Bank::WegoMoneyBank do
       expect(rates[1]['code']).to eq('AED')
       expect(rates[2]['code']).to eq('PHP')
       expect(rates[3]['code']).to eq('VND')
+    end
+  end
+
+  describe '#fetch_from_url' do
+
+    context 'request is more than 3 seconds' do
+      let(:error) { OpenURI::HTTPError.new('504 Gateway Timeout', nil) }
+      before do
+        WebMock.stub_request(:get, Money::Bank::WegoMoneyBank::API_URL).to_raise error
+      end
+      it 'returns nil' do
+        expect(subject.fetch_from_url).to eq nil
+      end
     end
   end
 

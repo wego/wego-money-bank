@@ -47,7 +47,9 @@ class Money
       end
 
       def fetch_from_url
-        open(url).read
+        open(url, read_timeout: 3).read
+      rescue OpenURI::HTTPError
+        nil
       end
 
       def fetch_from_cache
@@ -55,7 +57,7 @@ class Money
       end
 
       def exchange_rates
-        JSON.parse(fetch)
+        fetch.nil? ? [] : JSON.parse(fetch)
       end
 
       def get_rate(from, to)
@@ -106,7 +108,7 @@ class Money
 
       def refresh_rates_cache
         json_rates = fetch_from_url
-        if cache
+        if cache && json_rates
           open(cache, 'w') do |f|
             f.write(json_rates)
           end
