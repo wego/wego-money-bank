@@ -47,7 +47,7 @@ class Money
       end
 
       def fetch_from_url
-        open(url).read
+        URI.open(url).read
       end
 
       def fetch_from_cache
